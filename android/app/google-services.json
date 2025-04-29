@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101981200174",
+    "project_id": "facerecongnation-e1d02",
+    "storage_bucket": "facerecongnation-e1d02.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101981200174:android:43388b0a5e8d39037224bf",
+        "android_client_info": {
+          "package_name": "com.example.facerecognation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXHJF8b28E-rO8LyD_SKQtp_4hLvymLJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

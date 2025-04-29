@@ -1,0 +1,58 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub-cache/
+.buildlog/
+.flutter-plugins
+.flutter-plugins-dependencies
+generated_plugin_registrant.dart
+
+# Flutter build outputs
+build/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/App.framework
+ios/Flutter/engine/
+
+# Android specific
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+*.jks
+
+# Xcode specific
+ios/Runner.xcworkspace/
+ios/Pods/
+ios/.symlinks/
+ios/.flutter-plugins
+ios/.flutter-plugins-dependencies
+ios/.dart_tool/
+ios/Flutter/.last_build_id
+macos/Flutter/ephemeral/
+
+# Firebase & secrets
+firebase_options.dart
+.env
+.env.*
+keys.json
+
+# VS Code
+.vscode/
+
+# IntelliJ/Android Studio
+*.iml
+.idea/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Misc
+*.lock
+pubspec.lock
