@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants.dart';
-import '../../core/auth_service.dart';
 import '../../shared/widgets/show_snackbar.dart';
 
 class SignUpPage extends StatefulWidget {

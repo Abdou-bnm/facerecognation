@@ -1,110 +1,162 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/constants.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
-  void _logout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    GoRouter.of(context).go('/login');
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  String _fullName = 'User';
+
+  final List<Widget> _pages = [
+    const _HomeContent(),
+    const _DummyPage(title: 'Profile'),
+    const _DummyPage(title: 'Settings'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFullName();
+  }
+
+  Future<void> _loadFullName() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final name = doc['full_name'] ?? 'User';
+      setState(() => _fullName = name);
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() => _selectedIndex = index);
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final email = user?.email ?? 'Guest';
-
     return Scaffold(
       backgroundColor: Constants.primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text('Home', style: TextStyle(color: Constants.accentColor)),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Constants.accentColor),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
+      body: Column(
+        children: [
+          // ✅ Accent Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(24, 60, 24, 32),
+            decoration: const BoxDecoration(
+              color: Constants.accentColor,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // 👤 Welcome Text
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Hi, $_fullName 👋',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          )),
+                      const SizedBox(height: 4),
+                      const Text('Manage your attendance',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          )),
+                    ],
+                  ),
+                ),
+                // 🚪 Logout
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    GoRouter.of(context).go('/login');
+                  },
+                ),
+              ],
+            ),
           ),
+
+          // 🔽 Main Page Content
+          Expanded(child: _pages[_selectedIndex]),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Constants.accentColor.withOpacity(0.1),
-                child: const Icon(Icons.person, size: 40, color: Constants.accentColor),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Welcome, $email!',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Constants.accentColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Manage your face attendance easily',
-                style: Constants.labelStyle,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-
-              GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 20,
-                childAspectRatio: 0.9,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _HomeButton(
-                    label: 'Scan Face',
-                    icon: Icons.camera_alt_outlined,
-                    onTap: () => GoRouter.of(context).push('/face-scan'),
-                  ),
-                  _HomeButton(
-                    label: 'My History',
-                    icon: Icons.history,
-                    onTap: () => GoRouter.of(context).push('/attendance-history'),
-                  ),
-                  _HomeButton(
-                    label: 'Profile',
-                    icon: Icons.person_outline,
-                    onTap: () {}, // Profile screen (optional to build)
-                  ),
-                  _HomeButton(
-                    label: 'Face Enrollment',
-                    icon: Icons.add_a_photo_outlined,
-                    onTap: () => GoRouter.of(context).push('/face-enroll'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        selectedItemColor: Constants.accentColor,
+        unselectedItemColor: Constants.accentColor.withOpacity(0.5),
+        backgroundColor: Colors.white,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), label: 'Settings'),
+        ],
       ),
     );
   }
 }
 
-class _HomeButton extends StatelessWidget {
+class _HomeContent extends StatelessWidget {
+  const _HomeContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: GridView.count(
+        crossAxisCount: 2,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: 0.9,
+        children: [
+          _HomeCard(
+            label: 'Scan Face',
+            icon: Icons.camera_alt_outlined,
+            onTap: () => GoRouter.of(context).push('/face-scan'),
+          ),
+          _HomeCard(
+            label: 'My History',
+            icon: Icons.history,
+            onTap: () => GoRouter.of(context).push('/attendance-history'),
+          ),
+          _HomeCard(
+            label: 'Face Enroll',
+            icon: Icons.face_retouching_natural,
+            onTap: () => GoRouter.of(context).push('/face-enroll'),
+          ),
+          _HomeCard(
+            label: 'Support',
+            icon: Icons.help_outline,
+            onTap: () {}, // Optional future support
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeCard extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
 
-  const _HomeButton({
+  const _HomeCard({
     required this.label,
     required this.icon,
     required this.onTap,
@@ -115,7 +167,6 @@ class _HomeButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -128,6 +179,7 @@ class _HomeButton extends StatelessWidget {
             ),
           ],
         ),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -135,14 +187,32 @@ class _HomeButton extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               label,
-              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Constants.accentColor,
-                fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DummyPage extends StatelessWidget {
+  final String title;
+
+  const _DummyPage({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          color: Constants.accentColor,
         ),
       ),
     );
