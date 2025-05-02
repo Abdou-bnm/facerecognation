@@ -138,6 +138,16 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.fingerprint, color: Constants.accentColor),
+                  label: const Text("Use Face ID / Fingerprint", style: TextStyle(color: Constants.accentColor)),
+                  onPressed: () => GoRouter.of(context).push('/biometric-auth'),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(50),
+                    side: const BorderSide(color: Constants.accentColor),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 TextButton(
                   onPressed: () => GoRouter.of(context).go('/signup'),
                   child: const Text("Don’t have an account? Sign Up", style: TextStyle(color: Constants.accentColor)),

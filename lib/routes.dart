@@ -4,9 +4,7 @@ import 'screens/auth/signup_page.dart';
 import 'screens/auth/forgot_password_page.dart';
 import 'screens/auth/verify_email_page.dart';
 import 'screens/home_page.dart';
-import 'screens/attendance/face_enroll_page.dart';
-import 'screens/attendance/face_scan_page.dart';
-import 'screens/attendance/attendance_history_page.dart';
+import 'screens/auth/biometric_auth_page.dart'; // ✅ Add this line
 
 class AppRouter {
   static final router = GoRouter(
@@ -33,16 +31,8 @@ class AppRouter {
         builder: (_, __) => const HomePage(),
       ),
       GoRoute(
-        path: '/face-enroll',
-        builder: (_, __) => const FaceEnrollmentPage(),
-      ),
-      GoRoute(
-        path: '/face-scan',
-        builder: (_, __) => const FaceScanPage(),
-      ),
-      GoRoute(
-        path: '/attendance-history',
-        builder: (_, __) => const AttendanceHistoryPage(),
+        path: '/biometric-auth', // ✅ NEW
+        builder: (_, __) => const BiometricAuthPage(),
       ),
     ],
   );
